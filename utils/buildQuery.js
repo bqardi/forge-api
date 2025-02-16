@@ -20,3 +20,22 @@ export const buildUpdateQuery = (table, id, fields) => {
 
   return { query, values };
 };
+
+export const buildCreateQuery = (table, fields) => {
+  const keys = [];
+  const placeholders = [];
+  const values = [];
+  let query = `INSERT INTO ${table} (`;
+
+  Object.keys(fields).forEach((key) => {
+    if (fields[key] !== undefined && fields[key] !== null) {
+      keys.push(key);
+      placeholders.push(`$${values.length + 1}`);
+      values.push(fields[key]);
+    }
+  });
+
+  query += keys.join(", ") + ") VALUES (" + placeholders.join(", ") + ")";
+
+  return { query, values };
+};

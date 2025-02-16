@@ -1,6 +1,6 @@
 import { db } from "../config/db.js";
 import { getAllItems } from "../models/pluginModel.js";
-import { buildUpdateQuery } from "../utils/buildQuery.js";
+import { buildCreateQuery, buildUpdateQuery } from "../utils/buildQuery.js";
 
 export const getAll = async (req, res) => {
   try {
@@ -78,11 +78,21 @@ export const createOne = async (req, res) => {
         .json({ message: "Plugin with this name already exists" });
     }
 
-    const result = await db.query(
-      "INSERT INTO plugins (name, version) VALUES ($1, $2) RETURNING *",
-      [name, version, description, download_url, update_url, author, author_url]
-    );
-    res.status(201).json(result.rows[0]);
+    const { query, values } = buildCreateQuery("plugins", {
+      name,
+      version,
+      description,
+      download_url,
+      update_url,
+      author,
+      author_url,
+    });
+
+    const result = await db.query(query, values);
+
+    res.status(201).json({
+      message: `Entry created. ${result.rowCount} row(s) affected`,
+    });
   } catch (err) {
     res.status(500).send(err.message);
   }
