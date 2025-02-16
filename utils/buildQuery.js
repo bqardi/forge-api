@@ -3,7 +3,7 @@ export const buildUpdateQuery = (table, id, fields) => {
   const values = [];
   let query = `UPDATE ${table} SET `;
 
-  Object.keys(fields).forEach((key, index) => {
+  Object.keys(fields).forEach((key) => {
     if (fields[key] !== undefined && fields[key] !== null) {
       setClauses.push(`${key} = $${values.length + 1}`);
       values.push(fields[key]);
