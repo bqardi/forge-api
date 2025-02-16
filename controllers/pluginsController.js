@@ -58,7 +58,15 @@ export const getOne = async (req, res) => {
 };
 
 export const createOne = async (req, res) => {
-  const { name, version } = req.body;
+  const {
+    name,
+    version,
+    description = "",
+    download_url = "",
+    update_url = "",
+    author = "",
+    author_url = "",
+  } = req.body;
   try {
     const existingPlugin = await db.query(
       "SELECT * FROM plugins WHERE name = $1",
@@ -72,7 +80,7 @@ export const createOne = async (req, res) => {
 
     const result = await db.query(
       "INSERT INTO plugins (name, version) VALUES ($1, $2) RETURNING *",
-      [name, version]
+      [name, version, description, download_url, update_url, author, author_url]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -82,12 +90,25 @@ export const createOne = async (req, res) => {
 
 export const updateOne = async (req, res) => {
   const { id } = req.params;
-  const { name, version } = req.body;
+  const {
+    name,
+    version,
+    description = "",
+    download_url = "",
+    update_url = "",
+    author = "",
+    author_url = "",
+  } = req.body;
 
   try {
     const { query, values } = buildUpdateQuery("plugins", id, {
       name,
       version,
+      description,
+      download_url,
+      update_url,
+      author,
+      author_url,
     });
 
     const result = await db.query(query, values);
